@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Deansquirrel/goToolCommon"
 	"github.com/Deansquirrel/goToolSecret"
 	"github.com/Deansquirrel/goZ5ReportMdBaoZhShouR/global"
 	"github.com/Deansquirrel/goZ5ReportMdBaoZhShouR/object"
+	"github.com/Deansquirrel/goZ5ReportMdBaoZhShouR/repository"
+	"math"
 	"time"
 )
 
@@ -83,3 +86,133 @@ func (c *common) VerifyToken(sToken string) (int, bool, error) {
 //	}
 //	return c.GetToken(mdId,c.GetTokenTimeout())
 //}
+
+//获取门店报账收入数据
+func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.Time) ([]*object.MdBaoZhShouRData, error) {
+	list := make(map[string]*object.MdBaoZhShouRData)
+	for _, yyr := range c.getYyrList(begDate, endDate) {
+		list[yyr] = &object.MdBaoZhShouRData{
+			Yyr:            yyr,
+			TransferDetail: make(map[string]float64),
+			CardDetail:     make(map[string]float64),
+			TicketDetail:   make(map[string]float64),
+		}
+	}
+	rep := repository.NewRepZb()
+	zzList, err := rep.GetZzInfo()
+	if err != nil {
+		return nil, err
+	}
+	kzList, err := rep.GetKzInfo()
+	if err != nil {
+		return nil, err
+	}
+	qzList, err := rep.GetQzInfo()
+	if err != nil {
+		return nil, err
+	}
+
+	summaryData, err := rep.GetBaoZhShouRSummaryData(mdId, begDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	for _, sData := range summaryData {
+		d, ok := list[goToolCommon.GetDateStr(sData.Hsr)]
+		if !ok {
+			continue
+		}
+		d.Cash = sData.XjSr * sData.XjRate
+		d.Total = d.Total + d.Cash
+		d.Credit = sData.SzSr * sData.SzRate
+		d.Total = d.Total + d.Credit
+		d.TotalCheck = int(math.Ceil(sData.JyCs * sData.JyCsRate))
+	}
+
+	zzData, err := rep.GetBaoZhShouRZzDetailData(mdId, begDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	for _, data := range zzData {
+		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
+		if !ok {
+			continue
+		}
+		d.Total = d.Total + data.ZzJe
+		d.Transfer = d.Transfer + data.ZzJe
+		var zzName string
+		zzName, ok = zzList[data.ZzId]
+		if !ok {
+			zzName = "已禁用"
+		}
+		_, ok = d.TransferDetail[zzName]
+		if ok {
+			d.TransferDetail[zzName] = d.TransferDetail[zzName] + data.ZzJe
+		} else {
+			d.TransferDetail[zzName] = data.ZzJe
+		}
+	}
+
+	kzData, err := rep.GetBaoZhShouRKzDetailData(mdId, begDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	for _, data := range kzData {
+		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
+		if !ok {
+			continue
+		}
+		d.Total = d.Total + data.KzJe
+		d.Card = d.Card + data.KzJe
+		var kzName string
+		kzName, ok = kzList[data.KzId]
+		if !ok {
+			kzName = "已禁用"
+		}
+		_, ok = d.CardDetail[kzName]
+		if ok {
+			d.CardDetail[kzName] = d.CardDetail[kzName] + data.KzJe
+		} else {
+			d.CardDetail[kzName] = data.KzJe
+		}
+	}
+
+	qzData, err := rep.GetBaoZhShouRQzDetailData(mdId, begDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	for _, data := range qzData {
+		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
+		if !ok {
+			continue
+		}
+		d.Total = d.Total + data.QzJe
+		d.Ticket = d.Ticket + data.QzJe
+		var qzName string
+		qzName, ok = qzList[data.QzId]
+		if !ok {
+			qzName = "已禁用"
+		}
+		_, ok = d.TicketDetail[qzName]
+		if ok {
+			d.TicketDetail[qzName] = d.TicketDetail[qzName] + data.QzJe
+		} else {
+			d.TicketDetail[qzName] = data.QzJe
+		}
+	}
+
+	rList := make([]*object.MdBaoZhShouRData, 0)
+	for _, v := range list {
+		rList = append(rList, v)
+	}
+	return rList, nil
+}
+
+//获取查询日期段内的营业日列表
+func (c *common) getYyrList(begDate time.Time, endDate time.Time) []string {
+	rList := make([]string, 0)
+	for endDate.Add(time.Hour * 24).After(begDate) {
+		rList = append(rList, goToolCommon.GetDateStr(begDate))
+		begDate = begDate.Add(time.Hour * 24)
+	}
+	return rList
+}

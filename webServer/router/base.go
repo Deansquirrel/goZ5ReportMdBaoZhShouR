@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-import log "github.com/Deansquirrel/goToolLog"
-
 type base struct {
 	app *iris.Application
 	c   common
@@ -37,6 +35,7 @@ func (base *base) AddBase() {
 		v.Post("/login", base.login)
 		v.Post("/logout", base.logout)
 		v.Post("/refreshtoken", base.refreshToken)
+		v.Post("/data", base.getMdData)
 	}
 }
 
@@ -192,7 +191,6 @@ func (base *base) getMdData(ctx iris.Context) {
 		base.c.WriteResponse(ctx, response)
 		return
 	}
-	log.Debug(fmt.Sprintf("token: %s,sd: %s,ed: %s", request.Token, request.StartDate, request.EndDate))
 	w := worker.NewCommon()
 	mdId, isVerified, err := w.VerifyToken(request.Token)
 	if err != nil {
@@ -231,8 +229,7 @@ func (base *base) getMdData(ctx iris.Context) {
 		base.c.WriteResponse(ctx, response)
 		return
 	}
-	repZb := repository.NewRepZb()
-	d, err := repZb.GetMdBaoZhShouR(mdId, sTime, eTime)
+	d, err := w.GetMdBaoZhShouRData(mdId, sTime, eTime)
 	if err != nil {
 		response = object.GetMdDatResponse{
 			ErrCode: -1,
@@ -241,10 +238,11 @@ func (base *base) getMdData(ctx iris.Context) {
 		base.c.WriteResponse(ctx, response)
 		return
 	}
+
 	response = object.GetMdDatResponse{
 		ErrCode: int(object.ErrTypeCodeNoError),
 		ErrMsg:  string(object.ErrTypeMsgNoError),
-		Data:    *d,
+		Data:    d,
 	}
 	base.c.WriteResponse(ctx, response)
 	return

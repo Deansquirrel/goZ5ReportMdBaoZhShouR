@@ -14,8 +14,36 @@ type Token struct {
 	Expire time.Time
 }
 
+type BaoZhShouRSummaryData struct {
+	Hsr      time.Time
+	XjSr     float64
+	XjRate   float64
+	SzSr     float64
+	SzRate   float64
+	JyCs     float64
+	JyCsRate float64
+}
+
+type BaoZhShouRZzDetailData struct {
+	Hsr  time.Time
+	ZzJe float64
+	ZzId int
+}
+
+type BaoZhShouRKzDetailData struct {
+	Hsr  time.Time
+	KzJe float64
+	KzId int
+}
+
+type BaoZhShouRQzDetailData struct {
+	Hsr  time.Time
+	QzJe float64
+	QzId int
+}
+
 type MdBaoZhShouRData struct {
-	Date           string             `json:"date"`
+	Yyr            string             `json:"yyr"`
 	Total          float64            `json:"total"`          //合计
 	Cash           float64            `json:"cash"`           //现金
 	Credit         float64            `json:"credit"`         //赊账
@@ -26,7 +54,4 @@ type MdBaoZhShouRData struct {
 	Ticket         float64            `json:"ticket"`         //券种
 	TicketDetail   map[string]float64 `json:"ticketdetail"`   //券种明细
 	TotalCheck     int                `json:"totalcheck"`     //交易次数
-}
-
-type mdBaoZhShouRDetailData struct {
 }

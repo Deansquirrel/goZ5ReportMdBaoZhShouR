@@ -39,7 +39,7 @@ type GetMdDataRequest struct {
 }
 
 type GetMdDatResponse struct {
-	ErrCode int                `json:"errcode"`
-	ErrMsg  string             `json:"errmsg"`
-	Data    []MdBaoZhShouRData `json:"data"`
+	ErrCode int                 `json:"errcode"`
+	ErrMsg  string              `json:"errmsg"`
+	Data    []*MdBaoZhShouRData `json:"data"`
 }
