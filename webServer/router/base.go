@@ -9,6 +9,8 @@ import (
 	"github.com/Deansquirrel/goZ5ReportMdBaoZhShouR/worker"
 	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris"
+	"sort"
+	"strconv"
 	"time"
 )
 
@@ -181,10 +183,10 @@ func (base *base) logout(ctx iris.Context) {
 //获取门店数据
 func (base *base) getMdData(ctx iris.Context) {
 	var request object.GetMdDataRequest
-	var response object.GetMdDatResponse
+	var response object.GetMdDataResponse
 	err := ctx.ReadJSON(&request)
 	if err != nil {
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: iris.StatusBadRequest,
 			ErrMsg:  err.Error(),
 		}
@@ -194,7 +196,7 @@ func (base *base) getMdData(ctx iris.Context) {
 	w := worker.NewCommon()
 	mdId, isVerified, err := w.VerifyToken(request.Token)
 	if err != nil {
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: -1,
 			ErrMsg:  err.Error(),
 		}
@@ -202,7 +204,7 @@ func (base *base) getMdData(ctx iris.Context) {
 		return
 	}
 	if !isVerified {
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: int(object.ErrTypeCodeTokenTimeout),
 			ErrMsg:  string(object.ErrTypeMsgTokenTimeout),
 		}
@@ -212,7 +214,7 @@ func (base *base) getMdData(ctx iris.Context) {
 	sTime, err := time.Parse("2006-01-02", request.StartDate)
 	if err != nil {
 		errMsg := fmt.Sprintf("convert start date err: %s", err.Error())
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: -1,
 			ErrMsg:  errMsg,
 		}
@@ -222,16 +224,16 @@ func (base *base) getMdData(ctx iris.Context) {
 	eTime, err := time.Parse("2006-01-02", request.EndDate)
 	if err != nil {
 		errMsg := fmt.Sprintf("convert end date err: %s", err.Error())
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: -1,
 			ErrMsg:  errMsg,
 		}
 		base.c.WriteResponse(ctx, response)
 		return
 	}
-	d, err := w.GetMdBaoZhShouRData(mdId, sTime, eTime)
+	zzList, kzList, qzList, d, err := w.GetMdBaoZhShouRData(mdId, sTime, eTime)
 	if err != nil {
-		response = object.GetMdDatResponse{
+		response = object.GetMdDataResponse{
 			ErrCode: -1,
 			ErrMsg:  err.Error(),
 		}
@@ -239,10 +241,89 @@ func (base *base) getMdData(ctx iris.Context) {
 		return
 	}
 
-	response = object.GetMdDatResponse{
+	rKey := make([]string, 0)
+	rList := make(map[string]object.GetMdDataResponseDetail)
+	for _, dd := range d {
+		zd := make(map[string]string)
+		for _, n := range zzList {
+			_, ok := dd.TransferDetail[n]
+			if ok {
+				zd[n] = strconv.FormatFloat(dd.TransferDetail[n], 'f', 2, 64)
+			} else {
+				zd[n] = ""
+			}
+		}
+		kd := make(map[string]string)
+		for _, n := range kzList {
+			_, ok := dd.CardDetail[n]
+			if ok {
+				kd[n] = strconv.FormatFloat(dd.CardDetail[n], 'f', 2, 64)
+			} else {
+				kd[n] = ""
+			}
+		}
+		qz := make(map[string]string)
+		for _, n := range qzList {
+			_, ok := dd.TicketDetail[n]
+			if ok {
+				qz[n] = strconv.FormatFloat(dd.TicketDetail[n], 'f', 2, 64)
+			} else {
+				qz[n] = ""
+			}
+		}
+
+		var zf, kf, qf string
+		_, zzOk := dd.TransferDetail[global.IsForbiddenTilte]
+		if zzOk {
+			zf = strconv.FormatFloat(dd.TransferDetail[global.IsForbiddenTilte], 'f', 2, 64)
+		} else {
+			zf = ""
+		}
+		_, kzOk := dd.CardDetail[global.IsForbiddenTilte]
+		if kzOk {
+			kf = strconv.FormatFloat(dd.CardDetail[global.IsForbiddenTilte], 'f', 2, 64)
+		} else {
+			kf = ""
+		}
+		_, qzOk := dd.TicketDetail[global.IsForbiddenTilte]
+		if qzOk {
+			qf = strconv.FormatFloat(dd.TicketDetail[global.IsForbiddenTilte], 'f', 2, 64)
+		} else {
+			qf = ""
+		}
+
+		rKey = append(rKey, dd.Yyr)
+		rList[dd.Yyr] = object.GetMdDataResponseDetail{
+			Yyr:               dd.Yyr,
+			Total:             strconv.FormatFloat(dd.Total, 'f', 2, 64),
+			Cash:              strconv.FormatFloat(dd.Cash, 'f', 2, 64),
+			Credit:            strconv.FormatFloat(dd.Credit, 'f', 2, 64),
+			Transfer:          strconv.FormatFloat(dd.Transfer, 'f', 2, 64),
+			TransferDetail:    zd,
+			TransferForbidden: zf,
+			Card:              strconv.FormatFloat(dd.Card, 'f', 2, 64),
+			CardDetail:        kd,
+			CardForbidden:     kf,
+			Ticket:            strconv.FormatFloat(dd.Ticket, 'f', 2, 64),
+			TicketDetail:      qz,
+			TicketForbidden:   qf,
+			TotalCheck:        strconv.Itoa(dd.TotalCheck),
+		}
+	}
+
+	sort.Strings(rKey)
+	rRList := make([]object.GetMdDataResponseDetail, 0)
+	for i := 0; i < len(rList); i++ {
+		rRList = append(rRList, rList[rKey[i]])
+	}
+
+	response = object.GetMdDataResponse{
 		ErrCode: int(object.ErrTypeCodeNoError),
 		ErrMsg:  string(object.ErrTypeMsgNoError),
-		Data:    d,
+		ZzList:  zzList,
+		KzList:  kzList,
+		QzList:  qzList,
+		Data:    rRList,
 	}
 	base.c.WriteResponse(ctx, response)
 	return

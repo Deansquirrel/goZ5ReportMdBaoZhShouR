@@ -10,7 +10,8 @@ const (
 	//TestVersion = "0.0.0 Build20190101"
 	Version = "0.0.0 Build20190101"
 
-	SecretKey = "Z5ReportMdBaoZhShouR"
+	SecretKey        = "Z5ReportMdBaoZhShouR"
+	IsForbiddenTilte = "已禁用"
 )
 
 var Ctx context.Context

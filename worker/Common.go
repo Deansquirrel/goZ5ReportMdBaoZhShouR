@@ -88,7 +88,9 @@ func (c *common) VerifyToken(sToken string) (int, bool, error) {
 //}
 
 //获取门店报账收入数据
-func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.Time) ([]*object.MdBaoZhShouRData, error) {
+func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.Time) (
+	zzStrList []string, kzStrList []string, qzStrList []string,
+	data []*object.MdBaoZhShouRData, err error) {
 	list := make(map[string]*object.MdBaoZhShouRData)
 	for _, yyr := range c.getYyrList(begDate, endDate) {
 		list[yyr] = &object.MdBaoZhShouRData{
@@ -101,20 +103,29 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 	rep := repository.NewRepZb()
 	zzList, err := rep.GetZzInfo()
 	if err != nil {
-		return nil, err
+		return
+	}
+	for _, v := range zzList {
+		zzStrList = append(zzStrList, v)
 	}
 	kzList, err := rep.GetKzInfo()
 	if err != nil {
-		return nil, err
+		return
+	}
+	for _, v := range kzList {
+		kzStrList = append(kzStrList, v)
 	}
 	qzList, err := rep.GetQzInfo()
 	if err != nil {
-		return nil, err
+		return
+	}
+	for _, v := range qzList {
+		qzStrList = append(qzStrList, v)
 	}
 
 	summaryData, err := rep.GetBaoZhShouRSummaryData(mdId, begDate, endDate)
 	if err != nil {
-		return nil, err
+		return
 	}
 	for _, sData := range summaryData {
 		d, ok := list[goToolCommon.GetDateStr(sData.Hsr)]
@@ -130,7 +141,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 
 	zzData, err := rep.GetBaoZhShouRZzDetailData(mdId, begDate, endDate)
 	if err != nil {
-		return nil, err
+		return
 	}
 	for _, data := range zzData {
 		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
@@ -142,7 +153,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var zzName string
 		zzName, ok = zzList[data.ZzId]
 		if !ok {
-			zzName = "已禁用"
+			zzName = global.IsForbiddenTilte
 		}
 		_, ok = d.TransferDetail[zzName]
 		if ok {
@@ -154,7 +165,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 
 	kzData, err := rep.GetBaoZhShouRKzDetailData(mdId, begDate, endDate)
 	if err != nil {
-		return nil, err
+		return
 	}
 	for _, data := range kzData {
 		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
@@ -166,7 +177,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var kzName string
 		kzName, ok = kzList[data.KzId]
 		if !ok {
-			kzName = "已禁用"
+			kzName = global.IsForbiddenTilte
 		}
 		_, ok = d.CardDetail[kzName]
 		if ok {
@@ -178,7 +189,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 
 	qzData, err := rep.GetBaoZhShouRQzDetailData(mdId, begDate, endDate)
 	if err != nil {
-		return nil, err
+		return
 	}
 	for _, data := range qzData {
 		d, ok := list[goToolCommon.GetDateStr(data.Hsr)]
@@ -190,7 +201,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var qzName string
 		qzName, ok = qzList[data.QzId]
 		if !ok {
-			qzName = "已禁用"
+			qzName = global.IsForbiddenTilte
 		}
 		_, ok = d.TicketDetail[qzName]
 		if ok {
@@ -200,11 +211,10 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		}
 	}
 
-	rList := make([]*object.MdBaoZhShouRData, 0)
 	for _, v := range list {
-		rList = append(rList, v)
+		data = append(data, v)
 	}
-	return rList, nil
+	return
 }
 
 //获取查询日期段内的营业日列表
