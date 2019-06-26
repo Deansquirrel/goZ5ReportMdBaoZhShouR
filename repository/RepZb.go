@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+import log "github.com/Deansquirrel/goToolLog"
+
 const (
 	sqlLoginVerify = "" +
 		"SELECT COUNT(*) AS NUM " +
@@ -49,6 +51,10 @@ const (
 		"SELECT [xshsr],[xsqzje] * [xsqzdybl]/100 AS [qzje],[xsqzid] AS [qzid] " +
 		"FROM [ywmdxssrqzmxhzt_md] " +
 		"WHERE [xshsr] >= ? and [xshsr] <= ? and [xsmdid] = ?"
+	sqlGetMdName = "" +
+		"SELECT [BRNAME] " +
+		"FROM [JLTYBRANCHT] " +
+		"WHERE [BRID] = ?"
 )
 
 type repZb struct {
@@ -77,11 +83,15 @@ func (r *repZb) LoginVerify(name string, pwd string) (bool, error) {
 	for rows.Next() {
 		err := rows.Scan(&num)
 		if err != nil {
-			return false, err
+			errMsg := fmt.Sprintf("LoginVerify read data err: %s", err.Error())
+			log.Error(errMsg)
+			return false, errors.New(errMsg)
 		}
 	}
 	if rows.Err() != nil {
-		return false, rows.Err()
+		errMsg := fmt.Sprintf("LoginVerify read data err: %s", rows.Err().Error())
+		log.Error(errMsg)
+		return false, errors.New(errMsg)
 	}
 	if num > 0 {
 		return true, nil
@@ -106,17 +116,55 @@ func (r *repZb) GetMdIdByLogin(name string) (int, error) {
 	for rows.Next() {
 		err := rows.Scan(&mdId)
 		if err != nil {
-			return -1, err
+			errMsg := fmt.Sprintf("GetMdIdByLogin read data err: %s", err.Error())
+			log.Error(errMsg)
+			return -1, errors.New(errMsg)
 		}
 		gotMdId = true
 	}
 	if rows.Err() != nil {
-		return -1, rows.Err()
+		errMsg := fmt.Sprintf("GetMdIdByLogin read data err: %s", rows.Err().Error())
+		log.Error(errMsg)
+		return -1, errors.New(errMsg)
 	}
 	if gotMdId {
 		return mdId, nil
 	} else {
 		return -1, errors.New("get mdid failed")
+	}
+}
+
+//获取门店名称
+func (r *repZb) GetMdName(mdId int) (string, error) {
+	comm := NewCommon()
+	rows, err := comm.GetRowsBySQL2000(r.dbConfig, sqlGetMdName, mdId)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+	var mdName string
+	gotMdName := false
+	for rows.Next() {
+		err = rows.Scan(&mdName)
+		if err != nil {
+			errMsg := fmt.Sprintf("GetMdName read data err: %s", err.Error())
+			log.Error(errMsg)
+			return "", errors.New(errMsg)
+		}
+		gotMdName = true
+		break
+	}
+	if rows.Err() != nil {
+		errMsg := fmt.Sprintf("GetMdName read data err: %s", rows.Err().Error())
+		log.Error(errMsg)
+		return "", errors.New(errMsg)
+	}
+	if gotMdName {
+		return mdName, nil
+	} else {
+		return "", errors.New("get mdName failed")
 	}
 }
 
@@ -137,12 +185,14 @@ func (r *repZb) GetZzInfo() (map[int]string, error) {
 		err = rows.Scan(&transId, &transName)
 		if err != nil {
 			errMsg := fmt.Sprintf("read zzinfo data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData[transId] = transName
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read zzinfo data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -165,12 +215,14 @@ func (r *repZb) GetKzInfo() (map[int]string, error) {
 		err = rows.Scan(&gsId, &gsName)
 		if err != nil {
 			errMsg := fmt.Sprintf("read kzinfo data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData[gsId] = gsName
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read kzinfo data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -193,12 +245,14 @@ func (r *repZb) GetQzInfo() (map[int]string, error) {
 		err = rows.Scan(&gsId, &gsName)
 		if err != nil {
 			errMsg := fmt.Sprintf("read qzinfo data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData[gsId] = gsName
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read qzinfo data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -221,12 +275,14 @@ func (r *repZb) GetBaoZhShouRSummaryData(mdId int, begDate time.Time, endDate ti
 		err = rows.Scan(&d.Hsr, &d.XjSr, &d.XjRate, &d.SzSr, &d.SzRate, &d.JyCs, &d.JyCsRate)
 		if err != nil {
 			errMsg := fmt.Sprintf("read BaoZhShouRSummaryData data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData = append(rData, &d)
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read BaoZhShouRSummaryData data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -249,12 +305,14 @@ func (r *repZb) GetBaoZhShouRZzDetailData(mdId int, begDate time.Time, endDate t
 		err = rows.Scan(&d.Hsr, &d.ZzJe, &d.ZzId)
 		if err != nil {
 			errMsg := fmt.Sprintf("read BaoZhShouRZzDetailData data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData = append(rData, &d)
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read BaoZhShouRZzDetailData data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -277,12 +335,14 @@ func (r *repZb) GetBaoZhShouRKzDetailData(mdId int, begDate time.Time, endDate t
 		err = rows.Scan(&d.Hsr, &d.KzJe, &d.KzId)
 		if err != nil {
 			errMsg := fmt.Sprintf("read BaoZhShouRKzDetailData data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData = append(rData, &d)
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read BaoZhShouRKzDetailData data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil
@@ -307,12 +367,14 @@ func (r *repZb) GetBaoZhShouRQzDetailData(mdId int, begDate time.Time, endDate t
 		err := rows.Scan(&d.Hsr, &d.QzJe, &d.QzId)
 		if err != nil {
 			errMsg := fmt.Sprintf("read BaoZhShouRZzDetailData data err: %s", err.Error())
+			log.Error(errMsg)
 			return nil, errors.New(errMsg)
 		}
 		rData = append(rData, &d)
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read BaoZhShouRZzDetailData data err: %s", rows.Err().Error())
+		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}
 	return rData, nil

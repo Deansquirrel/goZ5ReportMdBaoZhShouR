@@ -151,6 +151,16 @@ func (base *base) login(ctx iris.Context) {
 		return
 	}
 
+	mdName, err := r.GetMdName(mdId)
+	if err != nil {
+		response = object.LoginResponse{
+			ErrCode: -1,
+			ErrMsg:  fmt.Sprintf("login success,but get mdname err: %s", err.Error()),
+		}
+		base.c.WriteResponse(ctx, response)
+		return
+	}
+
 	w := worker.NewCommon()
 	token, err := w.GetToken(mdId, w.GetTokenTimeout())
 	if err != nil {
@@ -165,6 +175,7 @@ func (base *base) login(ctx iris.Context) {
 	response = object.LoginResponse{
 		ErrCode: int(object.ErrTypeCodeNoError),
 		ErrMsg:  string(object.ErrTypeMsgNoError),
+		MdName:  mdName,
 		Token:   token,
 	}
 	base.c.WriteResponse(ctx, response)

@@ -29,6 +29,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
+	MdName  string `json:"mdname"`
 	Token   string `json:"token"`
 }
 
