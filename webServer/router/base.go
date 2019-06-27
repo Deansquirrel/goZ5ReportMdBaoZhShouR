@@ -328,6 +328,10 @@ func (base *base) getMdData(ctx iris.Context) {
 		rRList = append(rRList, rList[rKey[i]])
 	}
 
+	sort.Strings(zzList)
+	sort.Strings(kzList)
+	sort.Strings(qzList)
+
 	response = object.GetMdDataResponse{
 		ErrCode: int(object.ErrTypeCodeNoError),
 		ErrMsg:  string(object.ErrTypeMsgNoError),
