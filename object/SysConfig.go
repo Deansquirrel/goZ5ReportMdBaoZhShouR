@@ -111,7 +111,7 @@ type systemConfigWeb struct {
 
 func (sc *systemConfigWeb) FormatConfig() {
 	if sc.TokenTimeout <= 0 {
-		sc.TokenTimeout = 120
+		sc.TokenTimeout = 60 * 24
 	}
 }
 
