@@ -37,19 +37,31 @@ const (
 	sqlGetBaoZhShouRSummaryData = "" +
 		"SELECT [xshsr],[xsxjsr],[xsxjdybl]/100 AS [xjrate],[xsszsr],[xsszdybl]/100 AS [szrate]," +
 		"[xsjycs],[xsjycsdybl]/100 AS [csrate] " +
-		"FROM [ywmdxssrhzt_md] " +
+		"FROM [ywmdxssrhzt_md] A " +
+		"	INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
+		"		AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"		AND B.[mdyysjtype] & 1 <> 0" +
 		"WHERE [xshsr]>=? and [xshsr]<=? and [xsmdid] = ?"
 	sqlGetBaoZhShouRZzDetailData = "" +
 		"SELECT [xshsr],[xszzje]*[xszzdybl]/100 AS [zzje],[xszzid] AS [zzid] " +
-		"FROM [ywmdxssrzzdt_md] " +
+		"FROM [ywmdxssrzzdt_md] A " +
+		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
+		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"	AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr]>=? and [xshsr]<=? and [xsmdid] = ?"
 	sqlGetBaoZhShouRKzDetailData = "" +
 		"SELECT [xshsr],[xskzje] * [xskzdybl]/100 AS [kzje],[xskzid] AS [kzid] " +
-		"FROM [ywmdxssrkzmxhzt_md] " +
+		"FROM [ywmdxssrkzmxhzt_md] A " +
+		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
+		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"	AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr] >= ? and [xshsr] <= ? and [xsmdid] = ?"
 	sqlGetBaoZhShouRQzDetailData = "" +
 		"SELECT [xshsr],[xsqzje] * [xsqzdybl]/100 AS [qzje],[xsqzid] AS [qzid] " +
-		"FROM [ywmdxssrqzmxhzt_md] " +
+		"FROM [ywmdxssrqzmxhzt_md] A " +
+		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
+		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"	AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr] >= ? and [xshsr] <= ? and [xsmdid] = ?"
 	sqlGetMdName = "" +
 		"SELECT [BRNAME] " +
