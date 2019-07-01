@@ -46,7 +46,7 @@ type GetMdDataResponse struct {
 	KzList  []string                  `json:"kzlist"`
 	QzList  []string                  `json:"qzlist"`
 	Data    []GetMdDataResponseDetail `json:"data"`
-	Total   GetMdDataResponseDetail   `json:"total"`
+	//Total   GetMdDataResponseDetail   `json:"total"`
 }
 
 type GetMdDataResponseDetail struct {

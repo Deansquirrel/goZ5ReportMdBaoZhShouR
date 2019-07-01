@@ -106,12 +106,16 @@ func (sc *systemConfigService) FormatConfig() {
 
 //Web配置
 type systemConfigWeb struct {
-	TokenTimeout int `toml:"tokenTimeout"`
+	TokenTimeout  int `toml:"tokenTimeout"`
+	MaxSearchDays int `toml:"maxSearchDays"`
 }
 
 func (sc *systemConfigWeb) FormatConfig() {
 	if sc.TokenTimeout <= 0 {
 		sc.TokenTimeout = 60 * 24
+	}
+	if sc.MaxSearchDays <= 0 {
+		sc.MaxSearchDays = 90
 	}
 }
 
