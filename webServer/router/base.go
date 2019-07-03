@@ -296,9 +296,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		for _, n := range zzList {
 			_, ok := dd.TransferDetail[n]
 			if ok {
-				zd[n] = strconv.FormatFloat(dd.TransferDetail[n], 'f', 2, 64)
+				zd["transfer"+n] = strconv.FormatFloat(dd.TransferDetail[n], 'f', 2, 64)
 			} else {
-				zd[n] = ""
+				zd["transfer"+n] = ""
 			}
 			//_, ok = total.TransferDetail[n]
 			//if ok {
@@ -311,9 +311,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		for _, n := range kzList {
 			_, ok := dd.CardDetail[n]
 			if ok {
-				kd[n] = strconv.FormatFloat(dd.CardDetail[n], 'f', 2, 64)
+				kd["card"+n] = strconv.FormatFloat(dd.CardDetail[n], 'f', 2, 64)
 			} else {
-				kd[n] = ""
+				kd["card"+n] = ""
 			}
 			//_, ok = total.CardDetail[n]
 			//if ok {
@@ -326,9 +326,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		for _, n := range qzList {
 			_, ok := dd.TicketDetail[n]
 			if ok {
-				qz[n] = strconv.FormatFloat(dd.TicketDetail[n], 'f', 2, 64)
+				qz["ticket"+n] = strconv.FormatFloat(dd.TicketDetail[n], 'f', 2, 64)
 			} else {
-				qz[n] = ""
+				qz["ticket"+n] = ""
 			}
 			//_, ok = total.TicketDetail[n]
 			//if ok {
