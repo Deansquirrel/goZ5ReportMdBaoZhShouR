@@ -11,7 +11,7 @@ const (
 	Version = "0.0.0 Build20190101"
 
 	SecretKey        = "Z5ReportMdBaoZhShouR"
-	IsForbiddenTilte = "已禁用"
+	IsForbiddenTitle = "已禁用"
 )
 
 var Ctx context.Context

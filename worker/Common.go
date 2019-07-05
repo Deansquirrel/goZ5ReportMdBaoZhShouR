@@ -165,7 +165,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var zzName string
 		zzName, ok = zzList[data.ZzId]
 		if !ok {
-			zzName = global.IsForbiddenTilte
+			zzName = global.IsForbiddenTitle
 		}
 		_, ok = d.TransferDetail[zzName]
 		if ok {
@@ -189,7 +189,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var kzName string
 		kzName, ok = kzList[data.KzId]
 		if !ok {
-			kzName = global.IsForbiddenTilte
+			kzName = global.IsForbiddenTitle
 		}
 		_, ok = d.CardDetail[kzName]
 		if ok {
@@ -213,7 +213,7 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		var qzName string
 		qzName, ok = qzList[data.QzId]
 		if !ok {
-			qzName = global.IsForbiddenTilte
+			qzName = global.IsForbiddenTitle
 		}
 		_, ok = d.TicketDetail[qzName]
 		if ok {
