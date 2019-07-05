@@ -67,6 +67,29 @@ const (
 		"SELECT [BRNAME] " +
 		"FROM [JLTYBRANCHT] " +
 		"WHERE [BRID] = ?"
+
+	sqlGetDisableList = "" +
+		"declare @mdid int " +
+		"declare @pset nvarchar(255)  " +
+		"select @mdid = ?  " +
+		"select @pset = isnull(mdus.uvalue,us.uvalue) " +
+		"from zlusersettings us " +
+		"left join ( " +
+		"    select ukey,uvalue " +
+		"    from zlmdusersettings mdus " +
+		"    inner join jltybrancht br on br.brripecode = mdus.brripecode " +
+		"    where br.brid = @mdid " +
+		") mdus on mdus.ukey = us.ukey where us.ukey = 'XsSrDyxSz'  " +
+		"select rtrim(ltrim(dbo.fn_strpart(dbo.fn_strpart(@pset,'|',sn),'=',1))) as [n] " +
+		"from xtstaticsn where sn > 0 and sn <= len(@pset)-len(replace(@pset,'|',''))+1"
+	//"" +
+	//"create table #vn(n varchar(100))  " +
+	//"insert #vn(n) " +
+	//"select rtrim(ltrim(dbo.fn_strpart(dbo.fn_strpart(@pset,'|',sn),'=',1))) " +
+	//"from xtstaticsn " +
+	//"where sn > 0 and sn <= len(@pset)-len(replace(@pset,'|',''))+1  " +
+	//"select * from #vn  " +
+	//"drop table #vn"
 )
 
 type repZb struct {
@@ -386,6 +409,41 @@ func (r *repZb) GetBaoZhShouRQzDetailData(mdId int, begDate time.Time, endDate t
 	}
 	if rows.Err() != nil {
 		errMsg := fmt.Sprintf("read BaoZhShouRZzDetailData data err: %s", rows.Err().Error())
+		log.Error(errMsg)
+		return nil, errors.New(errMsg)
+	}
+	return rData, nil
+}
+
+//获取可用的转账、券种、卡种
+func (r *repZb) GetDisableList(mdId int) ([]string, error) {
+	comm := NewCommon()
+	rows, err := comm.GetRowsBySQL2000(r.dbConfig, sqlGetDisableList, mdId)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+	rData := make([]string, 0)
+	for rows.Next() {
+		var n []byte
+		err := rows.Scan(&n)
+		if err != nil {
+			errMsg := fmt.Sprintf("read DisableList data err: %s", err.Error())
+			log.Error(errMsg)
+			return nil, errors.New(errMsg)
+		}
+		n, err = goToolCommon.DecodeGB18030(n)
+		if err != nil {
+			errMsg := fmt.Sprintf("read DisableList data convert chinese err: %s", err.Error())
+			log.Error(errMsg)
+			return nil, errors.New(errMsg)
+		}
+		rData = append(rData, string(n))
+	}
+	if rows.Err() != nil {
+		errMsg := fmt.Sprintf("read DisableList data err: %s", rows.Err().Error())
 		log.Error(errMsg)
 		return nil, errors.New(errMsg)
 	}

@@ -101,26 +101,38 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		}
 	}
 	rep := repository.NewRepZb()
+
+	disableList, err := rep.GetDisableList(mdId)
+	if err != nil {
+		return
+	}
+
 	zzList, err := rep.GetZzInfo()
 	if err != nil {
 		return
 	}
 	for _, v := range zzList {
-		zzStrList = append(zzStrList, v)
+		if c.checkContain(v, disableList) {
+			zzStrList = append(zzStrList, v)
+		}
 	}
 	kzList, err := rep.GetKzInfo()
 	if err != nil {
 		return
 	}
 	for _, v := range kzList {
-		kzStrList = append(kzStrList, v)
+		if c.checkContain(v, disableList) {
+			kzStrList = append(kzStrList, v)
+		}
 	}
 	qzList, err := rep.GetQzInfo()
 	if err != nil {
 		return
 	}
 	for _, v := range qzList {
-		qzStrList = append(qzStrList, v)
+		if c.checkContain(v, disableList) {
+			qzStrList = append(qzStrList, v)
+		}
 	}
 
 	summaryData, err := rep.GetBaoZhShouRSummaryData(mdId, begDate, endDate)
@@ -225,4 +237,13 @@ func (c *common) getYyrList(begDate time.Time, endDate time.Time) []string {
 		begDate = begDate.Add(time.Hour * 24)
 	}
 	return rList
+}
+
+func (c *common) checkContain(f string, list []string) bool {
+	for _, n := range list {
+		if f == n {
+			return true
+		}
+	}
+	return false
 }
