@@ -339,9 +339,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		}
 
 		var zf, kf, qf string
-		_, zzOk := dd.TransferDetail[global.IsForbiddenTilte]
+		_, zzOk := dd.TransferDetail[global.IsForbiddenTitle]
 		if zzOk {
-			zf = strconv.FormatFloat(dd.TransferDetail[global.IsForbiddenTilte], 'f', 2, 64)
+			zf = strconv.FormatFloat(dd.TransferDetail[global.IsForbiddenTitle], 'f', 2, 64)
 			//_, ok := total.TransferDetail[global.IsForbiddenTilte]
 			//if ok {
 			//	total.TransferDetail[global.IsForbiddenTilte] = total.TransferDetail[global.IsForbiddenTilte] + dd.TransferDetail[global.IsForbiddenTilte]
@@ -351,9 +351,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		} else {
 			zf = ""
 		}
-		_, kzOk := dd.CardDetail[global.IsForbiddenTilte]
+		_, kzOk := dd.CardDetail[global.IsForbiddenTitle]
 		if kzOk {
-			kf = strconv.FormatFloat(dd.CardDetail[global.IsForbiddenTilte], 'f', 2, 64)
+			kf = strconv.FormatFloat(dd.CardDetail[global.IsForbiddenTitle], 'f', 2, 64)
 			//_, ok := total.CardDetail[global.IsForbiddenTilte]
 			//if ok {
 			//	total.CardDetail[global.IsForbiddenTilte] = total.CardDetail[global.IsForbiddenTilte] + dd.CardDetail[global.IsForbiddenTilte]
@@ -363,9 +363,9 @@ func (base *base) getMdData(ctx iris.Context) {
 		} else {
 			kf = ""
 		}
-		_, qzOk := dd.TicketDetail[global.IsForbiddenTilte]
+		_, qzOk := dd.TicketDetail[global.IsForbiddenTitle]
 		if qzOk {
-			qf = strconv.FormatFloat(dd.TicketDetail[global.IsForbiddenTilte], 'f', 2, 64)
+			qf = strconv.FormatFloat(dd.TicketDetail[global.IsForbiddenTitle], 'f', 2, 64)
 			//_, ok := total.TicketDetail[global.IsForbiddenTilte]
 			//if ok {
 			//	total.TicketDetail[global.IsForbiddenTilte] = total.TicketDetail[global.IsForbiddenTilte] + dd.TicketDetail[global.IsForbiddenTilte]
