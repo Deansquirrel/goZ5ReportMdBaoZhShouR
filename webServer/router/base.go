@@ -269,29 +269,29 @@ func (base *base) getMdData(ctx iris.Context) {
 		return
 	}
 
-	//total := object.MdBaoZhShouRData{
-	//	Yyr:            "合计",
-	//	Total:          0,
-	//	Cash:           0,
-	//	Credit:         0,
-	//	Transfer:       0,
-	//	TransferDetail: make(map[string]float64),
-	//	Card:           0,
-	//	CardDetail:     make(map[string]float64),
-	//	Ticket:         0,
-	//	TicketDetail:   make(map[string]float64),
-	//	TotalCheck:     0,
-	//}
+	total := object.MdBaoZhShouRData{
+		Yyr:            "合计",
+		Total:          0,
+		Cash:           0,
+		Credit:         0,
+		Transfer:       0,
+		TransferDetail: make(map[string]float64),
+		Card:           0,
+		CardDetail:     make(map[string]float64),
+		Ticket:         0,
+		TicketDetail:   make(map[string]float64),
+		TotalCheck:     0,
+	}
 	rKey := make([]string, 0)
 	rList := make(map[string]object.GetMdDataResponseDetail)
 	for _, dd := range d {
-		//total.Total = total.Total + dd.Total
-		//total.Cash = total.Cash + dd.Cash
-		//total.Credit = total.Credit + dd.Credit
-		//total.Transfer = total.Transfer + dd.Transfer
-		//total.Card = total.Card + dd.Card
-		//total.Ticket = total.Ticket + dd.Ticket
-		//total.TotalCheck = total.TotalCheck + dd.TotalCheck
+		total.Total = total.Total + dd.Total
+		total.Cash = total.Cash + dd.Cash
+		total.Credit = total.Credit + dd.Credit
+		total.Transfer = total.Transfer + dd.Transfer
+		total.Card = total.Card + dd.Card
+		total.Ticket = total.Ticket + dd.Ticket
+		total.TotalCheck = total.TotalCheck + dd.TotalCheck
 		zd := make(map[string]string)
 		for _, n := range zzList {
 			_, ok := dd.TransferDetail[n]
@@ -300,12 +300,12 @@ func (base *base) getMdData(ctx iris.Context) {
 			} else {
 				zd["transfer"+n] = ""
 			}
-			//_, ok = total.TransferDetail[n]
-			//if ok {
-			//	total.TransferDetail[n] = total.TransferDetail[n] + dd.TransferDetail[n]
-			//} else {
-			//	total.TransferDetail[n] = dd.TransferDetail[n]
-			//}
+			_, ok = total.TransferDetail[n]
+			if ok {
+				total.TransferDetail[n] = total.TransferDetail[n] + dd.TransferDetail[n]
+			} else {
+				total.TransferDetail[n] = dd.TransferDetail[n]
+			}
 		}
 		kd := make(map[string]string)
 		for _, n := range kzList {
@@ -315,12 +315,12 @@ func (base *base) getMdData(ctx iris.Context) {
 			} else {
 				kd["card"+n] = ""
 			}
-			//_, ok = total.CardDetail[n]
-			//if ok {
-			//	total.CardDetail[n] = total.CardDetail[n] + dd.CardDetail[n]
-			//} else {
-			//	total.CardDetail[n] = dd.CardDetail[n]
-			//}
+			_, ok = total.CardDetail[n]
+			if ok {
+				total.CardDetail[n] = total.CardDetail[n] + dd.CardDetail[n]
+			} else {
+				total.CardDetail[n] = dd.CardDetail[n]
+			}
 		}
 		qz := make(map[string]string)
 		for _, n := range qzList {
@@ -330,48 +330,48 @@ func (base *base) getMdData(ctx iris.Context) {
 			} else {
 				qz["ticket"+n] = ""
 			}
-			//_, ok = total.TicketDetail[n]
-			//if ok {
-			//	total.TicketDetail[n] = total.TicketDetail[n] + dd.TicketDetail[n]
-			//} else {
-			//	total.TicketDetail[n] = dd.TicketDetail[n]
-			//}
+			_, ok = total.TicketDetail[n]
+			if ok {
+				total.TicketDetail[n] = total.TicketDetail[n] + dd.TicketDetail[n]
+			} else {
+				total.TicketDetail[n] = dd.TicketDetail[n]
+			}
 		}
 
 		var zf, kf, qf string
 		_, zzOk := dd.TransferDetail[global.IsForbiddenTitle]
 		if zzOk {
 			zf = strconv.FormatFloat(dd.TransferDetail[global.IsForbiddenTitle], 'f', 2, 64)
-			//_, ok := total.TransferDetail[global.IsForbiddenTilte]
-			//if ok {
-			//	total.TransferDetail[global.IsForbiddenTilte] = total.TransferDetail[global.IsForbiddenTilte] + dd.TransferDetail[global.IsForbiddenTilte]
-			//} else {
-			//	total.TransferDetail[global.IsForbiddenTilte] = dd.TransferDetail[global.IsForbiddenTilte]
-			//}
+			_, ok := total.TransferDetail[global.IsForbiddenTitle]
+			if ok {
+				total.TransferDetail[global.IsForbiddenTitle] = total.TransferDetail[global.IsForbiddenTitle] + dd.TransferDetail[global.IsForbiddenTitle]
+			} else {
+				total.TransferDetail[global.IsForbiddenTitle] = dd.TransferDetail[global.IsForbiddenTitle]
+			}
 		} else {
 			zf = ""
 		}
 		_, kzOk := dd.CardDetail[global.IsForbiddenTitle]
 		if kzOk {
 			kf = strconv.FormatFloat(dd.CardDetail[global.IsForbiddenTitle], 'f', 2, 64)
-			//_, ok := total.CardDetail[global.IsForbiddenTilte]
-			//if ok {
-			//	total.CardDetail[global.IsForbiddenTilte] = total.CardDetail[global.IsForbiddenTilte] + dd.CardDetail[global.IsForbiddenTilte]
-			//} else {
-			//	total.CardDetail[global.IsForbiddenTilte] = dd.CardDetail[global.IsForbiddenTilte]
-			//}
+			_, ok := total.CardDetail[global.IsForbiddenTitle]
+			if ok {
+				total.CardDetail[global.IsForbiddenTitle] = total.CardDetail[global.IsForbiddenTitle] + dd.CardDetail[global.IsForbiddenTitle]
+			} else {
+				total.CardDetail[global.IsForbiddenTitle] = dd.CardDetail[global.IsForbiddenTitle]
+			}
 		} else {
 			kf = ""
 		}
 		_, qzOk := dd.TicketDetail[global.IsForbiddenTitle]
 		if qzOk {
 			qf = strconv.FormatFloat(dd.TicketDetail[global.IsForbiddenTitle], 'f', 2, 64)
-			//_, ok := total.TicketDetail[global.IsForbiddenTilte]
-			//if ok {
-			//	total.TicketDetail[global.IsForbiddenTilte] = total.TicketDetail[global.IsForbiddenTilte] + dd.TicketDetail[global.IsForbiddenTilte]
-			//} else {
-			//	total.TicketDetail[global.IsForbiddenTilte] = dd.TicketDetail[global.IsForbiddenTilte]
-			//}
+			_, ok := total.TicketDetail[global.IsForbiddenTitle]
+			if ok {
+				total.TicketDetail[global.IsForbiddenTitle] = total.TicketDetail[global.IsForbiddenTitle] + dd.TicketDetail[global.IsForbiddenTitle]
+			} else {
+				total.TicketDetail[global.IsForbiddenTitle] = dd.TicketDetail[global.IsForbiddenTitle]
+			}
 		} else {
 			qf = ""
 		}
@@ -394,6 +394,74 @@ func (base *base) getMdData(ctx iris.Context) {
 			TotalCheck:        strconv.Itoa(dd.TotalCheck),
 		}
 	}
+	rKey = append(rKey, total.Yyr)
+
+	tzd := make(map[string]string)
+	for _, n := range zzList {
+		_, ok := total.TransferDetail[n]
+		if ok {
+			tzd["transfer"+n] = strconv.FormatFloat(total.TransferDetail[n], 'f', 2, 64)
+		} else {
+			tzd["transfer"+n] = ""
+		}
+	}
+	tkd := make(map[string]string)
+	for _, n := range kzList {
+		_, ok := total.CardDetail[n]
+		if ok {
+			tkd["card"+n] = strconv.FormatFloat(total.CardDetail[n], 'f', 2, 64)
+		} else {
+			tkd["card"+n] = ""
+		}
+	}
+	tqz := make(map[string]string)
+	for _, n := range qzList {
+		_, ok := total.TicketDetail[n]
+		if ok {
+			tqz["ticket"+n] = strconv.FormatFloat(total.TicketDetail[n], 'f', 2, 64)
+		} else {
+			tqz["ticket"+n] = ""
+		}
+	}
+
+	var tzf, tkf, tqf string
+	_, zzOk := total.TransferDetail[global.IsForbiddenTitle]
+	if zzOk {
+		tzf = strconv.FormatFloat(total.TransferDetail[global.IsForbiddenTitle], 'f', 2, 64)
+	} else {
+		tzf = ""
+	}
+	_, kzOk := total.CardDetail[global.IsForbiddenTitle]
+	if kzOk {
+		tkf = strconv.FormatFloat(total.CardDetail[global.IsForbiddenTitle], 'f', 2, 64)
+	} else {
+		tkf = ""
+	}
+	_, qzOk := total.TicketDetail[global.IsForbiddenTitle]
+	if qzOk {
+		tqf = strconv.FormatFloat(total.TicketDetail[global.IsForbiddenTitle], 'f', 2, 64)
+	} else {
+		tqf = ""
+	}
+
+	rTotal := object.GetMdDataResponseDetail{
+		Yyr:               total.Yyr,
+		Total:             strconv.FormatFloat(total.Total, 'f', 2, 64),
+		Cash:              strconv.FormatFloat(total.Cash, 'f', 2, 64),
+		Credit:            strconv.FormatFloat(total.Credit, 'f', 2, 64),
+		Transfer:          strconv.FormatFloat(total.Transfer, 'f', 2, 64),
+		TransferDetail:    tzd,
+		TransferForbidden: tzf,
+		Card:              strconv.FormatFloat(total.Card, 'f', 2, 64),
+		CardDetail:        tkd,
+		CardForbidden:     tkf,
+		Ticket:            strconv.FormatFloat(total.Ticket, 'f', 2, 64),
+		TicketDetail:      tqz,
+		TicketForbidden:   tqf,
+		TotalCheck:        strconv.Itoa(total.TotalCheck),
+	}
+
+	rList[total.Yyr] = rTotal
 
 	//sort.Strings(rKey)
 	sort.Sort(goToolCommon.SortByPinyin(rKey))
@@ -408,68 +476,6 @@ func (base *base) getMdData(ctx iris.Context) {
 	sort.Sort(goToolCommon.SortByPinyin(kzList))
 	//sort.Strings(qzList)
 	sort.Sort(goToolCommon.SortByPinyin(qzList))
-
-	//strTotal := object.GetMdDataResponseDetail{
-	//	Yyr:            total.Yyr,
-	//	Total:          strconv.FormatFloat(total.Total, 'f', 2, 64),
-	//	Cash:           strconv.FormatFloat(total.Cash, 'f', 2, 64),
-	//	Credit:         strconv.FormatFloat(total.Credit, 'f', 2, 64),
-	//	Transfer:       strconv.FormatFloat(total.Transfer, 'f', 2, 64),
-	//	TransferDetail: make(map[string]string),
-	//	Card:           strconv.FormatFloat(total.Card, 'f', 2, 64),
-	//	CardDetail:     make(map[string]string),
-	//	Ticket:         strconv.FormatFloat(total.Ticket, 'f', 2, 64),
-	//	TicketDetail:   make(map[string]string),
-	//	TotalCheck:     strconv.Itoa(total.TotalCheck),
-	//}
-
-	//_, ok := total.TransferDetail[global.IsForbiddenTilte]
-	//if ok {
-	//	strTotal.TransferForbidden = strconv.FormatFloat(total.TransferDetail[global.IsForbiddenTilte], 'f', 2, 64)
-	//} else {
-	//	strTotal.TransferForbidden = ""
-	//}
-
-	//for _, n := range zzList {
-	//	_, ok := total.TransferDetail[n]
-	//	if ok {
-	//		strTotal.TransferDetail[n] = strconv.FormatFloat(total.TransferDetail[n], 'f', 2, 64)
-	//	} else {
-	//		strTotal.TransferDetail[n] = ""
-	//	}
-	//}
-
-	//_, ok = total.CardDetail[global.IsForbiddenTilte]
-	//if ok {
-	//	strTotal.CardForbidden = strconv.FormatFloat(total.CardDetail[global.IsForbiddenTilte], 'f', 2, 64)
-	//} else {
-	//	strTotal.CardForbidden = ""
-	//}
-
-	//for _, n := range kzList {
-	//	_, ok := total.CardDetail[n]
-	//	if ok {
-	//		strTotal.CardDetail[n] = strconv.FormatFloat(total.CardDetail[n], 'f', 2, 64)
-	//	} else {
-	//		strTotal.CardDetail[n] = ""
-	//	}
-	//}
-
-	//_, ok = total.TicketDetail[global.IsForbiddenTilte]
-	//if ok {
-	//	strTotal.TicketForbidden = strconv.FormatFloat(total.TicketDetail[global.IsForbiddenTilte], 'f', 2, 64)
-	//} else {
-	//	strTotal.TicketForbidden = ""
-	//}
-	//
-	//for _, n := range qzList {
-	//	_, ok := total.TicketDetail[n]
-	//	if ok {
-	//		strTotal.TicketDetail[n] = strconv.FormatFloat(total.TicketDetail[n], 'f', 2, 64)
-	//	} else {
-	//		strTotal.TicketDetail[n] = ""
-	//	}
-	//}
 
 	response = object.GetMdDataResponse{
 		ErrCode: int(object.ErrTypeCodeNoError),
