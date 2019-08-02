@@ -35,33 +35,33 @@ const (
 		"WHERE RIGHT([gssign],1) = 2 " +
 		"ORDER BY [gsid]"
 	sqlGetBaoZhShouRSummaryData = "" +
-		"SELECT [xshsr],[xsxjsr],[xsxjdybl]/100 AS [xjrate],[xsszsr],[xsszdybl]/100 AS [szrate]," +
-		"[xsjycs],[xsjycsdybl]/100 AS [csrate] " +
+		"SELECT [xshsr],[xsxjsr] = floor(xsxjsr * xsxjdybl / 10) / 10 ,[xjrate] = 1,[xsszsr] = floor(xsszsr * xsxjdybl / 10) / 10,[szrate] = 1," +
+		"[xsjycs] = ceiling(xsjycs * xsjycsdybl / 100),[csrate] = 1" +
 		"FROM [ywmdxssrhzt_md] A " +
-		"	INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
-		"		AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
-		"		AND B.[mdyysjtype] & 1 <> 0" +
+		"  INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
+		"    AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"    AND B.[mdyysjtype] & 1 <> 0" +
 		"WHERE [xshsr]>=? and [xshsr]<=? and [xsmdid] = ?"
 	sqlGetBaoZhShouRZzDetailData = "" +
-		"SELECT [xshsr],[xszzje]*[xszzdybl]/100 AS [zzje],[xszzid] AS [zzid] " +
+		"SELECT [xshsr],round([xszzje] * [xszzdybl] / 100,1) AS [zzje],[xszzid] AS [zzid] " +
 		"FROM [ywmdxssrzzdt_md] A " +
 		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
-		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
-		"	AND B.[mdyysjtype] & 1 <> 0 " +
+		"  AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"  AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr]>=? and [xshsr]<=? and [xsmdid] = ?"
 	sqlGetBaoZhShouRKzDetailData = "" +
-		"SELECT [xshsr],[xskzje] * [xskzdybl]/100 AS [kzje],[xskzid] AS [kzid] " +
+		"SELECT [xshsr],round([xskzje] * [xskzdybl] / 100,1) AS [kzje],[xskzid] AS [kzid] " +
 		"FROM [ywmdxssrkzmxhzt_md] A " +
 		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
-		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
-		"	AND B.[mdyysjtype] & 1 <> 0 " +
+		"  AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"  AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr] >= ? and [xshsr] <= ? and [xsmdid] = ?"
 	sqlGetBaoZhShouRQzDetailData = "" +
-		"SELECT [xshsr],[xsqzje] * [xsqzdybl]/100 AS [qzje],[xsqzid] AS [qzid] " +
+		"SELECT [xshsr],round([xsqzje] * [xsqzdybl] / 100,1) AS [qzje],[xsqzid] AS [qzid] " +
 		"FROM [ywmdxssrqzmxhzt_md] A " +
 		"INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
-		"	AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
-		"	AND B.[mdyysjtype] & 1 <> 0 " +
+		"  AND CONVERT(varchar(100), A.[xshsr], 112)= B.[mdyydate] " +
+		"  AND B.[mdyysjtype] & 1 <> 0 " +
 		"WHERE [xshsr] >= ? and [xshsr] <= ? and [xsmdid] = ?"
 	sqlGetMdName = "" +
 		"SELECT [BRNAME] " +
@@ -82,14 +82,6 @@ const (
 		") mdus on mdus.ukey = us.ukey where us.ukey = 'XsSrDyxSz'  " +
 		"select rtrim(ltrim(dbo.fn_strpart(dbo.fn_strpart(@pset,'|',sn),'=',1))) as [n] " +
 		"from xtstaticsn where sn > 0 and sn <= len(@pset)-len(replace(@pset,'|',''))+1"
-	//"" +
-	//"create table #vn(n varchar(100))  " +
-	//"insert #vn(n) " +
-	//"select rtrim(ltrim(dbo.fn_strpart(dbo.fn_strpart(@pset,'|',sn),'=',1))) " +
-	//"from xtstaticsn " +
-	//"where sn > 0 and sn <= len(@pset)-len(replace(@pset,'|',''))+1  " +
-	//"select * from #vn  " +
-	//"drop table #vn"
 )
 
 type repZb struct {
