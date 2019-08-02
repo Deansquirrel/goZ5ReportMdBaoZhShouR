@@ -8,7 +8,7 @@ import (
 const (
 	//PreVersion = "1.0.3 Build20190709"
 	//TestVersion = "0.0.0 Build20190101"
-	Version = "0.0.0 Build20190101"
+	Version = "1.0.4 Build20190802"
 
 	SecretKey        = "Z5ReportMdBaoZhShouR"
 	IsForbiddenTitle = "已禁用"
