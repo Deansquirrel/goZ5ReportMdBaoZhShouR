@@ -35,7 +35,7 @@ const (
 		"WHERE RIGHT([gssign],1) = 2 " +
 		"ORDER BY [gsid]"
 	sqlGetBaoZhShouRSummaryData = "" +
-		"SELECT [xshsr],[xsxjsr] = floor(xsxjsr * xsxjdybl / 10) / 10 ,[xjrate] = 1,[xsszsr] = floor(xsszsr * xsxjdybl / 10) / 10,[szrate] = 1," +
+		"SELECT [xshsr],[xsxjsr] = floor(xsxjsr * xsxjdybl / 10) / 10 ,[xjrate] = 1,[xsszsr] = floor(xsszsr * xsszdybl / 10) / 10,[szrate] = 1," +
 		"[xsjycs] = ceiling(xsjycs * xsjycsdybl / 100),[csrate] = 1" +
 		"FROM [ywmdxssrhzt_md] A " +
 		"  INNER JOIN [xtmdyystatus_md] B ON A.[xsmdid] = B.[mdyyid] " +
