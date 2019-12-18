@@ -223,6 +223,12 @@ func (c *common) GetMdBaoZhShouRData(mdId int, begDate time.Time, endDate time.T
 		}
 	}
 
+	//=============================================================
+	//20191218增加虚拟数据替换
+	dummyData := DummyData{}
+	dummyData.DummyDataReplace(mdId, begDate, endDate, list)
+	//=============================================================
+
 	for _, v := range list {
 		data = append(data, v)
 	}
