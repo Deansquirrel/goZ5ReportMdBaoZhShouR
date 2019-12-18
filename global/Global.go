@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	//PreVersion = "1.0.4 Build20190802"
+	//PreVersion = "1.0.5 Build20190805"
 	//TestVersion = "0.0.0 Build20190101"
 	Version = "0.0.0 Build20190101"
 
